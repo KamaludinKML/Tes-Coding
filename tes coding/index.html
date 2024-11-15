@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hasil Kalkulasi Langkah Operasi</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #f4f4f4;
+      }
+      h2 {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Hasil Kalkulasi Langkah Operasi</h2>
+    <input type="text" id="inputText" placeholder="Masukkan huruf" /><br /><br />
+    <button onclick="processInput()">Submit</button>
+
+    <h3>Output:</h3>
+    <table>
+      <tr>
+        <th>Langkah</th>
+        <th >Hasil</th>
+      </tr>
+      <tr>
+        <td>Soal 1 - Konversi Huruf ke Angka</td>
+        <td id="soal1"></td>
+      </tr>
+      <tr>
+        <td>Soal 2 - Ubah, jumlah, dan kurangkan secara bergantian</td>
+        <td id="soal2"></td>
+      </tr>
+      <tr>
+        <td>Soal 3 - ubah angka menjadi huruf setelah lakukan operasi 
+            menjabarkan output soal no 2 </td>
+        <td id="soal3"></td>
+      </tr>
+      <tr>
+        <td>Soal 4 - Modifikasi dengan operasi matematika Dua Huruf Terakhir</td>
+        <td id="soal4"></td>
+      </tr>
+      <tr>
+        <td>Soal 5 - operasikan matematika pada huruf dengan Nilai Genap</td>
+        <td id="soal5"></td>
+      </tr>
+    </table>
+
+    <script>
+      function processInput() {
+        const kamus = {
+          A: 0, B: 1, C: 1, D: 1, E: 2,
+          F: 3, G: 3, H: 3, I: 4, J: 5,
+          K: 5, L: 5, M: 5, N: 5, O: 6,
+          P: 7, Q: 7, R: 7, S: 7, T: 7,
+          U: 8, V: 9, W: 9, X: 9, Y: 9,
+          Z: 9,
+
+          a: 9, b: 8, c: 8, d: 8, e: 7,
+          f: 6, g: 6, h: 6, i: 5, j: 4,
+          k: 4, l: 4, m: 4, n: 4, o: 3,
+          p: 2, q: 2, r: 2, s: 2, t: 2,
+          u: 1, v: 0, w: 0, x: 0, y: 0,
+          z: 0, " ": 0,
+        };
+
+        const input = document.getElementById("inputText").value;
+        let numericValues = [];
+
+        // Soal 1 
+        for (let char of input) {
+          let value = kamus[char] !== undefined ? kamus[char] : 0;
+          numericValues.push(value);
+        }
+        document.getElementById("soal1").innerHTML = numericValues.join(" ");
+
+        // Soal 2 
+        let result2 = numericValues[0];
+        let calculations = [`${result2}`];
+        for (let i = 1; i < numericValues.length; i++) {
+          if (i % 2 === 1) {
+            result2 += numericValues[i];
+            calculations.push(`+ ${numericValues[i]} = ${result2}`);
+          } else {
+            result2 -= numericValues[i];
+            calculations.push(`- ${numericValues[i]} = ${result2}`);
+          }
+        }
+        document.getElementById("soal2").innerHTML = calculations.join("<br>");
+
+        // Soal 3 
+        const letterMapping = [
+          { value: 0, letter: "A" },
+          { value: 1, letter: "B" },
+          { value: 2, letter: "E" },
+          { value: 3, letter: "F" },
+          { value: 4, letter: "I" },
+          { value: 5, letter: "J" },
+          { value: 6, letter: "O" },
+          { value: 7, letter: "P" },
+          { value: 8, letter: "U" },
+          { value: 9, letter: "V" },
+        ];
+
+        let result3 = [];
+        let remainingValue = Math.abs(result2);
+        let index = 0;
+
+        while (remainingValue > 0) {
+          let letterValue = letterMapping[index % letterMapping.length].value;
+          let letter = letterMapping[index % letterMapping.length].letter;
+          if (remainingValue - letterValue >= 0) {
+            result3.push(letter);
+            remainingValue -= letterValue;
+          }
+          index++;
+        }
+        document.getElementById("soal3").innerHTML = result3.join(" ");
+
+        // Soal 4 
+        if (result3.length >= 2) {
+          let lastLetter = result3[result3.length - 1];
+          let secondLastLetter = result3[result3.length - 2];
+
+          let lastValue = kamus[lastLetter];
+          let secondLastValue = kamus[secondLastLetter];
+
+          lastValue = (lastValue + 1) % 10;
+          secondLastValue = (secondLastValue + 1) % 10;
+
+          let newLastLetter = Object.keys(kamus).find(
+            (key) => kamus[key] === lastValue
+          );
+          let newSecondLastLetter = Object.keys(kamus).find(
+            (key) => kamus[key] === secondLastValue
+          );
+
+          result3[result3.length - 1] = newLastLetter;
+          result3[result3.length - 2] = newSecondLastLetter;
+        }
+        document.getElementById("soal4").innerHTML = result3.join(" ");
+
+        // Soal 5 
+        let result5 = [];
+        for (let letter of result3) {
+          let value = kamus[letter];
+          if (value % 2 === 0) {
+            value = (value + 1) % 10;
+          }
+          result5.push(value);
+        }
+        document.getElementById("soal5").innerHTML = result5.join(" ");
+      }
+    </script>
+  </body>
+</html>
